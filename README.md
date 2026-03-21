@@ -1,36 +1,36 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DocMD Converter
 
-## Getting Started
+DOCX와 Markdown 간 양방향 변환기. 모든 처리는 브라우저에서 이루어지며, 서버로 파일이 전송되지 않습니다.
 
-First, run the development server:
+**Live Demo:** [docmd-converter.vercel.app](https://docmd-converter.vercel.app)
+
+## 주요 기능
+
+- **DOCX → Markdown** 변환
+- **Markdown → DOCX** 변환
+- 드래그 앤 드롭 파일 추가
+- 최대 50개 파일 배치 처리
+- 단일 파일은 직접 다운로드, 복수 파일은 ZIP 다운로드
+- DOCX 원본의 문단 간격을 Markdown에 정확히 반영 (빈 줄 기준 문단 구분)
+
+## 기술 스택
+
+- [Next.js](https://nextjs.org) (App Router)
+- [mammoth](https://github.com/mwilliamson/mammoth.js) - DOCX → HTML 변환
+- [Turndown](https://github.com/mixmark-io/turndown) - HTML → Markdown 변환
+- [docx](https://github.com/dolanmiri/docx) - Markdown → DOCX 변환
+- [JSZip](https://stuk.github.io/jszip/) - DOCX XML 파싱 및 ZIP 다운로드
+- [Tailwind CSS](https://tailwindcss.com) - 스타일링
+
+## 시작하기
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+[http://localhost:3000](http://localhost:3000)에서 확인할 수 있습니다.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 배포
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+GitHub에 푸시하면 Vercel을 통해 자동 배포됩니다.
