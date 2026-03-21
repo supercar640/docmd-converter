@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react';
 import type { ConversionMode, ConvertibleFile } from '@/types';
 import { convertDocxToMarkdown } from '@/lib/docxToMarkdown';
 import { convertMarkdownToDocx } from '@/lib/markdownToDocx';
-import { downloadAsZip } from '@/lib/zipDownload';
+import { downloadFiles } from '@/lib/zipDownload';
 import {
   replaceExtension,
   isValidDocx,
@@ -99,8 +99,8 @@ export default function ConverterApp() {
     setIsConverting(false);
   }, [files, mode]);
 
-  const handleDownloadZip = useCallback(() => {
-    downloadAsZip(files);
+  const handleDownload = useCallback(() => {
+    downloadFiles(files);
   }, [files]);
 
   const removeFile = useCallback((id: string) => {
@@ -150,13 +150,13 @@ export default function ConverterApp() {
 
           {doneCount > 0 && (
             <button
-              onClick={handleDownloadZip}
+              onClick={handleDownload}
               disabled={isConverting}
               className="rounded-lg bg-green-600 px-5 py-2.5 text-sm font-medium text-white
                          hover:bg-green-700 disabled:opacity-40 disabled:cursor-not-allowed
                          transition-colors"
             >
-              ZIP 다운로드 ({doneCount}개)
+              {doneCount === 1 ? '다운로드' : `ZIP 다운로드 (${doneCount}개)`}
             </button>
           )}
 
