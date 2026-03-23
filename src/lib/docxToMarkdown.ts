@@ -215,6 +215,8 @@ function mergeConsecutiveParagraphs(
 
   let pOffset = 0;
   for (const size of groupSizes) {
+    if (pOffset >= pParts.length) break;
+
     if (size <= 1) {
       // Single paragraph - no merging needed
       pOffset += size;
