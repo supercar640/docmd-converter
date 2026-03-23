@@ -184,6 +184,55 @@ function parseHtmlParts(
 }
 
 /**
+ * Preprocess HTML tables so turndown-plugin-gfm can convert them.
+ * mammoth outputs all cells as <td> without <thead>/<th>, but the
+ * GFM plugin requires the first row to be a heading row.
+ * This function:
+ * 1. Converts the first row's <td> to <th> and wraps it in <thead>
+ * 2. Wraps remaining rows in <tbody>
+ * 3. Strips <p> tags inside table cells (causes extra line breaks)
+ */
+function preprocessTables(html: string): string {
+  return html.replace(
+    /<table>([\s\S]*?)<\/table>/g,
+    (_match, inner: string) => {
+      // Strip <p> tags inside table cells
+      let cleaned = inner.replace(
+        /(<t[dh][^>]*>)\s*<p[^>]*>([\s\S]*?)<\/p>\s*(<\/t[dh]>)/g,
+        '$1$2$3',
+      );
+
+      // Collect all <tr>...</tr> blocks
+      const rows: string[] = [];
+      const trRegex = /<tr>([\s\S]*?)<\/tr>/g;
+      let m: RegExpExecArray | null;
+      while ((m = trRegex.exec(cleaned)) !== null) {
+        rows.push(m[1]);
+      }
+
+      if (rows.length === 0) return `<table>${cleaned}</table>`;
+
+      // Convert first row cells to <th>
+      const headRow = rows[0]
+        .replace(/<td([^>]*)>/g, '<th$1>')
+        .replace(/<\/td>/g, '</th>');
+
+      const bodyRows = rows
+        .slice(1)
+        .map((r) => `<tr>${r}</tr>`)
+        .join('');
+
+      return (
+        '<table>' +
+        `<thead><tr>${headRow}</tr></thead>` +
+        (bodyRows ? `<tbody>${bodyRows}</tbody>` : '') +
+        '</table>'
+      );
+    },
+  );
+}
+
+/**
  * Merge consecutive <p> tags in mammoth HTML based on group sizes.
  * Within each group, <p> tags are joined with <br> instead of being
  * separate paragraphs, so Turndown produces \n instead of \n\n.
@@ -264,7 +313,8 @@ export async function convertDocxToMarkdown(
   const groupSizes = buildGroupSizes(infos);
 
   const result = await mammoth.convertToHtml({ arrayBuffer });
-  const mergedHtml = mergeConsecutiveParagraphs(result.value, groupSizes);
+  const tableFixedHtml = preprocessTables(result.value);
+  const mergedHtml = mergeConsecutiveParagraphs(tableFixedHtml, groupSizes);
 
   const markdown = turndownService.turndown(mergedHtml);
   return markdown;
